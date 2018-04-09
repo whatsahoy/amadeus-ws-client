@@ -27,6 +27,8 @@ use Amadeus\Client\RequestOptions\Fare\PricePnr\ExemptTax;
 use Amadeus\Client\RequestOptions\Fare\PricePnr\FareBasis;
 use Amadeus\Client\RequestOptions\Fare\PricePnr\Tax;
 use Amadeus\Client\RequestOptions\Ticket\ExchangeInfoOptions;
+use Amadeus\Client\RequestOptions\Ticket\PassengerSelectionOptions;
+use Amadeus\Client\RequestOptions\Ticket\TicketInfoOptions;
 use Amadeus\Client\RequestOptions\Ticket\MultiRefOpt;
 use Amadeus\Client\RequestOptions\Ticket\PaxSegRef;
 use Amadeus\Client\RequestOptions\TicketRepricePnrWithBookingClassOptions;
@@ -68,6 +70,14 @@ class RepricePnrWithBookingClassTest extends BaseTestCase
                     ]
                 ])
             ],
+            'ticketInfo' => new TicketInfoOptions([
+                'number' => '9998550225521', 
+                'type' => 'ET',
+                'passengerSelection' => new PassengerSelectionOptions([
+                    'type' => 'PA',
+                    'reference' => 2
+                ])
+            ]),
             'multiReferences' => [
                 new MultiRefOpt([
                     'references' => [
@@ -104,6 +114,11 @@ class RepricePnrWithBookingClassTest extends BaseTestCase
         $this->assertEquals(1, $msg->exchangeInformationGroup[0]->transactionIdentifier->itemNumberDetails[0]->number);
         $this->assertEquals('9998550225521', $msg->exchangeInformationGroup[0]->documentInfoGroup[0]->paperticketDetailsLastCoupon->documentDetails->number);
         $this->assertEquals(RepricePnrWithBookingClass\DocumentDetails::TYPE_ELECTRONIC_TICKET, $msg->exchangeInformationGroup[0]->documentInfoGroup[0]->paperticketDetailsLastCoupon->documentDetails->type);
+
+        $this->assertEquals('9998550225521', $msg->ticketInfo->paperticketDetailsFirstCoupon->documentDetails->number);
+        $this->assertEquals('ET', $msg->ticketInfo->paperticketDetailsFirstCoupon->documentDetails->type);
+        $this->assertEquals('PA', $msg->ticketInfo->passengerSelection->referenceDetails->type);
+        $this->assertEquals(2, $msg->ticketInfo->passengerSelection->referenceDetails->value);
 
         $this->assertCount(2, $msg->pricingOption);
 

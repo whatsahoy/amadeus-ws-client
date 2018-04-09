@@ -236,4 +236,9 @@ class TicketRepricePnrWithBookingClassOptions extends Base
      * @var PaxSegRef[]
      */
     public $overrideReusableAmountRefs = [];
+
+    /**
+     * @var TicketInfoOptions[]
+     */
+    public $ticketInfo;
 }

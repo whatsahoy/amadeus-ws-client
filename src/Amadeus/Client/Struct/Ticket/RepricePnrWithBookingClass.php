@@ -27,6 +27,8 @@ use Amadeus\Client\RequestOptions\Fare\PricePnr\ExemptTax;
 use Amadeus\Client\RequestOptions\Fare\PricePnr\FareBasis;
 use Amadeus\Client\RequestOptions\Fare\PricePnr\Tax;
 use Amadeus\Client\RequestOptions\Ticket\ExchangeInfoOptions;
+use Amadeus\Client\RequestOptions\Ticket\PassengerSelectionOptions;
+use Amadeus\Client\RequestOptions\Ticket\TicketInfoOptions;
 use Amadeus\Client\RequestOptions\Ticket\MultiRefOpt;
 use Amadeus\Client\RequestOptions\Ticket\PaxSegRef;
 use Amadeus\Client\RequestOptions\TicketRepricePnrWithBookingClassOptions;
@@ -44,6 +46,8 @@ use Amadeus\Client\Struct\Fare\PricePnr13\TaxInformation;
 use Amadeus\Client\Struct\Ticket\RepricePnrWithBookingClass\ExchangeInformationGroup;
 use Amadeus\Client\Struct\Ticket\RepricePnrWithBookingClass\PricingOption;
 use Amadeus\Client\Struct\Ticket\RepricePnrWithBookingClass\PricingOptionKey;
+use Amadeus\Client\Struct\Ticket\RepricePnrWithBookingClass\PassengerSelection;
+use Amadeus\Client\Struct\Ticket\ReissueConfirmedPricing\TicketInfo;
 
 /**
  * Ticket_RepricePNRWithBookingClass request structure
@@ -64,6 +68,11 @@ class RepricePnrWithBookingClass extends BaseWsMessage
     public $pricingOption = [];
 
     /**
+     * @var TicketInfoOptions[]
+     */
+    public $ticketInfo;
+
+    /**
      * RepricePnrWithBookingClass constructor.
      *
      * @param TicketRepricePnrWithBookingClassOptions $options
@@ -72,7 +81,7 @@ class RepricePnrWithBookingClass extends BaseWsMessage
     {
         if (!is_null($options)) {
             $this->loadExchangeInfo($options->exchangeInfo);
-
+            $this->loadTicketInfo($options->ticketInfo);
             $this->pricingOption = $this->loadPricingOptionsFromRequestOptions($options);
         }
     }
@@ -85,6 +94,19 @@ class RepricePnrWithBookingClass extends BaseWsMessage
         foreach ($exchangeInfo as $info) {
             if ($info instanceof ExchangeInfoOptions) {
                 $this->exchangeInformationGroup[] = new ExchangeInformationGroup($info);
+            }
+        }
+    }
+
+    /**
+     * @param TicketInfo $ticketInfo
+     */
+    protected function loadTicketInfo($ticketInfo)
+    {
+        if ($ticketInfo instanceof TicketInfoOptions) {
+            $this->ticketInfo = new TicketInfo($ticketInfo->number, $ticketInfo->type);
+            if($ticketInfo->passengerSelection instanceof PassengerSelectionOptions) {
+                $this->ticketInfo->passengerSelection = new PassengerSelection($ticketInfo->passengerSelection->type, $ticketInfo->passengerSelection->reference);
             }
         }
     }

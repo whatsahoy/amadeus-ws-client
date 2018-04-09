@@ -47,7 +47,12 @@ class TicketInfo extends WsMessageUtility
      * @var PaperInformation
      */
     public $paperInformation;
-
+    
+    /**
+     * @var PassengerSelection
+     */
+    public $passengerSelection;
+    
     /**
      * TicketInfo constructor.
      *
@@ -56,7 +61,7 @@ class TicketInfo extends WsMessageUtility
      */
     public function __construct($ticket, $type)
     {
-        if ($this->checkAllNotEmpty($this, $type)) {
+        if ($this->checkAllNotEmpty($ticket, $type)) {
             $this->paperticketDetailsFirstCoupon = new PaperticketDetailsCoupon();
             $this->paperticketDetailsFirstCoupon->documentDetails = new DocumentDetails(
                 $ticket,
